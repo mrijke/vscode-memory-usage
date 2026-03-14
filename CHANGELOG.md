@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/mrijke/vscode-memory-usage/compare/v1.1.0...v1.1.1) (2026-03-14)
+
+
+### Bug Fixes
+
+* make sparkline visibility configurable via memoryUsage.showSparkline ([c2197a2](https://github.com/mrijke/vscode-memory-usage/commit/c2197a2a95923c57cc50b2c06bcc1a76b46217a2))
+
 ## [1.1.0](https://github.com/mrijke/vscode-memory-usage/compare/v1.0.1...v1.1.0) (2026-03-14)
 
 
