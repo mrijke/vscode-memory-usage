@@ -31,9 +31,9 @@ function makeSparkline(history: number[]): string {
   return samples.map(p => SPARK[Math.round((p / 100) * (SPARK.length - 1))]).join("");
 }
 
-function buildLabel(stats: MemStats, barLength: number, showSwap: boolean, history: number[]): string {
+function buildLabel(stats: MemStats, barLength: number, showSwap: boolean, showSparkline: boolean, history: number[]): string {
   const ramBar = makeBar(stats.ramPercent, barLength);
-  const spark = history.length > 1 ? makeSparkline(history) + " " : "";
+  const spark = showSparkline && history.length > 1 ? makeSparkline(history) + " " : "";
   let label = `$(server) ${spark}${ramBar} ${stats.ramPercent}%`;
 
   if (showSwap && stats.swapTotal > 0) {
@@ -113,6 +113,7 @@ export function activate(context: vscode.ExtensionContext) {
     return {
       interval: cfg.get<number>("refreshInterval", 3) * 1000,
       showSwap: cfg.get<boolean>("showSwap", true),
+      showSparkline: cfg.get<boolean>("showSparkline", true),
       barLength: cfg.get<number>("barLength", 8),
       warnThreshold: cfg.get<number>("warnThreshold", 70),
       criticalThreshold: cfg.get<number>("criticalThreshold", 90),
@@ -126,7 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
       const stats = getMemStats();
       history.push(stats.ramPercent);
       if (history.length > SPARKLINE_MAX_SAMPLES) history.shift();
-      statusBar.text = buildLabel(stats, cfg.barLength, cfg.showSwap, history);
+      statusBar.text = buildLabel(stats, cfg.barLength, cfg.showSwap, cfg.showSparkline, history);
       statusBar.tooltip = buildTooltip(stats, history);
       statusBar.backgroundColor = getColor(
         stats.ramPercent,

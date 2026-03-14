@@ -32,6 +32,7 @@ The sparkline shows the last 10 samples. The first bar is RAM, the second is SWA
 |---|---|---|
 | `memoryUsage.refreshInterval` | `3` | Seconds between auto-refreshes (1–60) |
 | `memoryUsage.showSwap` | `true` | Show SWAP usage alongside RAM |
+| `memoryUsage.showSparkline` | `true` | Show rolling sparkline history before the RAM bar |
 | `memoryUsage.barLength` | `8` | Width of the progress bar in characters (4–20) |
 | `memoryUsage.warnThreshold` | `70` | Percentage at which the bar turns yellow |
 | `memoryUsage.criticalThreshold` | `90` | Percentage at which the bar turns red |

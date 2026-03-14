@@ -48,6 +48,11 @@
           "default": true,
           "description": "Show SWAP usage in the status bar"
         },
+        "memoryUsage.showSparkline": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a rolling sparkline history before the RAM bar"
+        },
         "memoryUsage.barLength": {
           "type": "number",
           "default": 8,
