@@ -1,0 +1,11 @@
+**/.vscode/**
+**/node_modules/**
+src/**
+**/*.map
+tsconfig.json
+.eslintrc.json
+.github/**
+memory/**
+.claude/**
+release-please-config.json
+.release-please-manifest.json

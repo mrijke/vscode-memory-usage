@@ -1,0 +1,77 @@
+{
+  "license": "MIT",
+  "name": "vscode-memory-usage",
+  "displayName": "Memory Usage",
+  "description": "Fancy RAM and SWAP memory usage in the status bar",
+  "version": "0.1.0",
+  "publisher": "mrijke",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrijke/vscode-memory-usage"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["ram", "memory", "swap", "system", "monitor"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "memoryUsage.refresh",
+        "title": "RAM Usage: Refresh Now"
+      }
+    ],
+    "configuration": {
+      "title": "Memory Usage",
+      "properties": {
+        "memoryUsage.refreshInterval": {
+          "type": "number",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 60,
+          "description": "Refresh interval in seconds"
+        },
+        "memoryUsage.showSwap": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show SWAP usage in the status bar"
+        },
+        "memoryUsage.barLength": {
+          "type": "number",
+          "default": 8,
+          "minimum": 4,
+          "maximum": 20,
+          "description": "Length of the progress bar in characters"
+        },
+        "memoryUsage.warnThreshold": {
+          "type": "number",
+          "default": 70,
+          "minimum": 1,
+          "maximum": 99,
+          "description": "Percentage at which the indicator turns yellow"
+        },
+        "memoryUsage.criticalThreshold": {
+          "type": "number",
+          "default": 90,
+          "minimum": 1,
+          "maximum": 99,
+          "description": "Percentage at which the indicator turns red"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vsce": "vsce"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "^5.3.0"
+  }
+}
