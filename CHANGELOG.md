@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/mrijke/vscode-memory-usage/compare/v1.0.1...v1.1.0) (2026-03-14)
+
+
+### Features
+
+* add sparkline history and top processes to tooltip ([24c292c](https://github.com/mrijke/vscode-memory-usage/commit/24c292c35e6ce77b1b416b252a789382702a6ffa))
+
 ## [1.0.1](https://github.com/mrijke/vscode-memory-usage/compare/v1.0.0...v1.0.1) (2026-03-14)
 
 
