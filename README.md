@@ -1,12 +1,13 @@
 # Memory Usage
 
-A VS Code extension that displays real-time RAM and SWAP memory usage in the status bar, with a fancy block-character progress bar and color-coded alerts.
+A VS Code extension that displays real-time RAM and SWAP memory usage in the status bar, with a sparkline history, block-character progress bar, and color-coded alerts.
 
 ## Features
 
-- **Live progress bar** using smooth 8-step block characters (`▏▎▍▌▋▊▉█`)
+- **Sparkline history** — a rolling 10-sample trend (`▁▂▃▄▅▆▇█`) preceding the RAM bar shows memory pressure at a glance
+- **Live progress bar** using block characters (`█░`)
 - **Color-coded alerts** — the status bar turns yellow when usage is high and red when critical
-- **Rich tooltip** on hover with used/free/total broken down in human-readable units
+- **Rich tooltip** on hover with used/free/total, full 20-sample sparkline, and a table of the top 5 processes by RSS (Linux)
 - **Click to refresh** manually at any time
 - **Auto-refreshes** on a configurable interval (default: every 3 seconds)
 - Supports **Linux** (`/proc/meminfo`) and **macOS** (`vm_stat` / `sysctl`)
@@ -14,10 +15,10 @@ A VS Code extension that displays real-time RAM and SWAP memory usage in the sta
 ## Status Bar
 
 ```
-  █████░░░ 62%   ⇄ ██░░░░░░ 18%
+  ▁▂▂▃▄▅▅▆▆▇ █████░░░ 62%   ⇄ ██░░░░░░ 18%
 ```
 
-The first bar is RAM, the second is SWAP. Colors:
+The sparkline shows the last 10 samples. The first bar is RAM, the second is SWAP. Colors:
 
 | Color | Meaning |
 |---|---|
