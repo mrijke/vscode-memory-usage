@@ -3,7 +3,7 @@
   "name": "vscode-memory-usage",
   "displayName": "Memory Usage",
   "description": "Fancy RAM and SWAP memory usage in the status bar",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "publisher": "mrijke",
   "repository": {
     "type": "git",
