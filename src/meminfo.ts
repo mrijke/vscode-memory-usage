@@ -73,6 +73,36 @@ export function getMemStats(): MemStats {
   };
 }
 
+export interface ProcessInfo {
+  pid: number;
+  name: string;
+  rss: number; // bytes
+}
+
+export function getTopProcesses(n = 5): ProcessInfo[] {
+  if (process.platform !== "linux") return [];
+
+  try {
+    const procs: ProcessInfo[] = [];
+    for (const entry of fs.readdirSync("/proc")) {
+      if (!/^\d+$/.test(entry)) continue;
+      try {
+        const status = fs.readFileSync(`/proc/${entry}/status`, "utf8");
+        const name = status.match(/^Name:\s+(.+)/m)?.[1] ?? "?";
+        const rssKb = status.match(/^VmRSS:\s+(\d+)/m)?.[1];
+        if (rssKb) {
+          procs.push({ pid: parseInt(entry), name, rss: parseInt(rssKb) * 1024 });
+        }
+      } catch {
+        // process exited between readdir and read — skip
+      }
+    }
+    return procs.sort((a, b) => b.rss - a.rss).slice(0, n);
+  } catch {
+    return [];
+  }
+}
+
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
   const units = ["B", "KB", "MB", "GB", "TB"];

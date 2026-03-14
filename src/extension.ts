@@ -1,20 +1,15 @@
 import * as vscode from "vscode";
-import { getMemStats, formatBytes, MemStats } from "./meminfo";
+import { getMemStats, getTopProcesses, formatBytes, MemStats } from "./meminfo";
 
-// 8-step block characters for sub-character precision
-const BLOCKS = " ▏▎▍▌▋▊▉█";
+// Sparkline characters (8 levels, low → high)
+const SPARK = "▁▂▃▄▅▆▇█";
+
+const SPARKLINE_MAX_SAMPLES = 20;
+const SPARKLINE_DISPLAY = 10;
 
 function makeBar(percent: number, length: number): string {
-  const filled = (percent / 100) * length;
-  const full = Math.floor(filled);
-  const partial = Math.floor((filled - full) * (BLOCKS.length - 1));
-  const empty = length - full - (partial > 0 ? 1 : 0);
-
-  return (
-    "█".repeat(full) +
-    (partial > 0 ? BLOCKS[partial] : "") +
-    "░".repeat(Math.max(0, empty))
-  );
+  const full = Math.round((percent / 100) * length);
+  return "█".repeat(full) + "░".repeat(length - full);
 }
 
 function getColor(
@@ -31,9 +26,15 @@ function getColor(
   return new vscode.ThemeColor("statusBar.background");
 }
 
-function buildLabel(stats: MemStats, barLength: number, showSwap: boolean): string {
+function makeSparkline(history: number[]): string {
+  const samples = history.slice(-SPARKLINE_DISPLAY);
+  return samples.map(p => SPARK[Math.round((p / 100) * (SPARK.length - 1))]).join("");
+}
+
+function buildLabel(stats: MemStats, barLength: number, showSwap: boolean, history: number[]): string {
   const ramBar = makeBar(stats.ramPercent, barLength);
-  let label = `$(server) ${ramBar} ${stats.ramPercent}%`;
+  const spark = history.length > 1 ? makeSparkline(history) + " " : "";
+  let label = `$(server) ${spark}${ramBar} ${stats.ramPercent}%`;
 
   if (showSwap && stats.swapTotal > 0) {
     const swapBar = makeBar(stats.swapPercent, barLength);
@@ -45,7 +46,7 @@ function buildLabel(stats: MemStats, barLength: number, showSwap: boolean): stri
   return label;
 }
 
-function buildTooltip(stats: MemStats): vscode.MarkdownString {
+function buildTooltip(stats: MemStats, history: number[]): vscode.MarkdownString {
   const md = new vscode.MarkdownString("", true);
   md.isTrusted = true;
   md.supportThemeIcons = true;
@@ -54,6 +55,10 @@ function buildTooltip(stats: MemStats): vscode.MarkdownString {
   const swapBar = makeBar(stats.swapPercent, 20);
 
   md.appendMarkdown(`### $(server) RAM\n`);
+  if (history.length > 1) {
+    const spark = history.map(p => SPARK[Math.round((p / 100) * (SPARK.length - 1))]).join("");
+    md.appendMarkdown(`\`${spark}\`\n\n`);
+  }
   md.appendMarkdown(`\`${ramBar}\` **${stats.ramPercent}%**\n\n`);
   md.appendMarkdown(
     `Used: **${formatBytes(stats.ramUsed)}** / ${formatBytes(stats.ramTotal)}\n\n`
@@ -73,10 +78,20 @@ function buildTooltip(stats: MemStats): vscode.MarkdownString {
     md.appendMarkdown(`*No swap configured*\n\n`);
   }
 
+  const procs = getTopProcesses(5);
+  if (procs.length > 0) {
+    md.appendMarkdown(`---\n\n`);
+    md.appendMarkdown(`### $(list-ordered) Top processes by RAM\n\n`);
+    md.appendMarkdown(`| Process | PID | RSS |\n`);
+    md.appendMarkdown(`|---|---|---|\n`);
+    for (const p of procs) {
+      md.appendMarkdown(`| \`${p.name}\` | ${p.pid} | ${formatBytes(p.rss)} |\n`);
+    }
+    md.appendMarkdown(`\n`);
+  }
+
   md.appendMarkdown(`---\n\n`);
-  md.appendMarkdown(
-    `*Click to refresh — auto-refreshes every few seconds*\n\n`
-  );
+  md.appendMarkdown(`*Click to refresh — auto-refreshes every few seconds*\n\n`);
   md.appendMarkdown(`[$(refresh) Refresh now](command:memoryUsage.refresh)`);
 
   return md;
@@ -91,6 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
   statusBar.name = "Memory Usage";
 
   let timer: ReturnType<typeof setInterval> | undefined;
+  const history: number[] = [];
 
   function readConfig() {
     const cfg = vscode.workspace.getConfiguration("memoryUsage");
@@ -108,8 +124,10 @@ export function activate(context: vscode.ExtensionContext) {
   function update() {
     try {
       const stats = getMemStats();
-      statusBar.text = buildLabel(stats, cfg.barLength, cfg.showSwap);
-      statusBar.tooltip = buildTooltip(stats);
+      history.push(stats.ramPercent);
+      if (history.length > SPARKLINE_MAX_SAMPLES) history.shift();
+      statusBar.text = buildLabel(stats, cfg.barLength, cfg.showSwap, history);
+      statusBar.tooltip = buildTooltip(stats, history);
       statusBar.backgroundColor = getColor(
         stats.ramPercent,
         cfg.warnThreshold,
