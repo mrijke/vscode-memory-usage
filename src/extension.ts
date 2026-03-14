@@ -92,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   let timer: ReturnType<typeof setInterval> | undefined;
 
-  function getConfig() {
+  function readConfig() {
     const cfg = vscode.workspace.getConfiguration("memoryUsage");
     return {
       interval: cfg.get<number>("refreshInterval", 3) * 1000,
@@ -103,9 +103,10 @@ export function activate(context: vscode.ExtensionContext) {
     };
   }
 
+  let cfg = readConfig();
+
   function update() {
     try {
-      const cfg = getConfig();
       const stats = getMemStats();
       statusBar.text = buildLabel(stats, cfg.barLength, cfg.showSwap);
       statusBar.tooltip = buildTooltip(stats);
@@ -124,8 +125,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   function startTimer() {
     if (timer) clearInterval(timer);
-    const { interval } = getConfig();
-    timer = setInterval(update, interval);
+    timer = setInterval(update, cfg.interval);
   }
 
   context.subscriptions.push(
@@ -135,6 +135,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("memoryUsage")) {
+        cfg = readConfig();
         startTimer();
         update();
       }
