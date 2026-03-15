@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/mrijke/vscode-memory-usage/compare/v1.1.1...v1.1.2) (2026-03-15)
+
+
+### Bug Fixes
+
+* don't show sparkline in hover panel ([25bd15e](https://github.com/mrijke/vscode-memory-usage/commit/25bd15e535385156340a63573a59fba60c177a13))
+* optimize horizontal space ([36056fa](https://github.com/mrijke/vscode-memory-usage/commit/36056fa37fc4df3c0c3d64b16446b11649364b55))
+
 ## [1.1.1](https://github.com/mrijke/vscode-memory-usage/compare/v1.1.0...v1.1.1) (2026-03-14)
 
 
