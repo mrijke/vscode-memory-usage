@@ -55,11 +55,7 @@ function buildTooltip(stats: MemStats, history: number[]): vscode.MarkdownString
   const swapBar = makeBar(stats.swapPercent, 20);
 
   md.appendMarkdown(`### $(server) RAM\n`);
-  if (history.length > 1) {
-    const spark = history.map(p => SPARK[Math.round((p / 100) * (SPARK.length - 1))]).join("");
-    md.appendMarkdown(`\`${spark}\`\n\n`);
-  }
-  md.appendMarkdown(`\`${ramBar}\` **${stats.ramPercent}%**\n\n`);
+  md.appendMarkdown(`${ramBar} **${stats.ramPercent}%**\n\n`);
   md.appendMarkdown(
     `Used: **${formatBytes(stats.ramUsed)}** / ${formatBytes(stats.ramTotal)}\n\n`
   );
@@ -69,7 +65,7 @@ function buildTooltip(stats: MemStats, history: number[]): vscode.MarkdownString
 
   md.appendMarkdown(`### $(arrow-swap) SWAP\n`);
   if (stats.swapTotal > 0) {
-    md.appendMarkdown(`\`${swapBar}\` **${stats.swapPercent}%**\n\n`);
+    md.appendMarkdown(`${swapBar} **${stats.swapPercent}%**\n\n`);
     md.appendMarkdown(
       `Used: **${formatBytes(stats.swapUsed)}** / ${formatBytes(stats.swapTotal)}\n\n`
     );
